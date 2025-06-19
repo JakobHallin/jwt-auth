@@ -5,10 +5,27 @@ import (
 )
 
 func TestCreateUser(t *testing.T){
-	err := createUser("user","word")
+	tmpFile, err := os.CreateTemp("", "test_users.csv")
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+	storage = tmpFile.Name()
+	users = make(map[string]User)
+	err = createUser("user","word")
 	if err != nil {
 		t.Errorf("Failed to create user: %v", err)
 	}
+	record, err := os.ReadFile(storage)
+	if err != nil {
+		t.Fatalf("Failed to read temp file: %v", err)
+	}
+	expected := "user,word\n"
+	if string(record) != expected {
+		t.Errorf("Expected file content %q, got %q", expected, record)
+	}
+
+
 }
 func TestLoadUser(t *testing.T){
 	//Create a temporary CSV file

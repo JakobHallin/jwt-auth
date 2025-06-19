@@ -44,8 +44,8 @@ func loadUsers() error{ //https://www.geeksforgeeks.org/go-language/how-to-read-
 }
 func saveUser(user User) error{
 	//open file
-	csvFile, err := os.OpenFile("temp.csv", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	//absPath, _ := filepath.Abs(csvFile) //need to make sure it acutaly creates the file
+	csvFile, err := os.OpenFile(storage, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	//absPath, _ := filepath.Abs(csvFile) 
 	fmt.Println("CSV file created at:", csvFile.Name())
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
