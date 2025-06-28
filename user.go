@@ -5,11 +5,12 @@ import (
 	//"errors"
 	"os"
 	"log"
+	"golang.org/x/crypto/bcrypt"
 )
 type User struct{
 	//Id int  //will not use it now will just have it simple with name and password
 	Name string
-	Password string //will look how it will be encoded with jws token
+	Password string //will be hashed not use jwt token
 }
 var users = map[string]User{} //map of the users
 var storage = "temp.csv" //
@@ -62,7 +63,11 @@ func saveUser(user User) error{
 //handler in signup should call this function
 func createUser(name, password string) error{
 	//hash the password
-	user := User{Name: name, Password: password}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err !=nil{
+		return err
+	}
+	user := User{Name: name, Password: string(hashedPassword)}
 	//call saveUser(user) to save it
 	users[name]= user
 	return saveUser(user)
@@ -75,9 +80,7 @@ func auth(name, password string) bool{
 	}
 	//hash the password //will do latter
 	// compare it
-	if user.Password != password{
-		return false
-	}
-	return true
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	return err == nil
 }
 

@@ -2,6 +2,7 @@ package main
 import (
 	"testing"
 	"os"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestCreateUser(t *testing.T){
@@ -57,8 +58,9 @@ func TestLoadUser(t *testing.T){
 	}
 }
 func TestAuth(t *testing.T){
+	hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	users = map[string]User{
-		"test": {Name:"test", Password:"password"},
+		"test": {Name:"test", Password: string(hashed)},
 		"test2": {Name:"test2", Password:"password"},
 	}
 	//case 1 correct
@@ -66,7 +68,7 @@ func TestAuth(t *testing.T){
 		t.Error("expected to succsed")
 	}
 	//case 2 wrong
-	if auth("test","wrongpassword"){
+	if auth("test", "falsepassword"){
 		t.Error("expected to fail wrong password")
 	}
 	//case 3 non existing
