@@ -56,3 +56,23 @@ func TestLoadUser(t *testing.T){
         	t.Errorf("Expected password 'password123', got '%s'", user.Password)
 	}
 }
+func TestAuth(t *testing.T){
+	users = map[string]User{
+		"test": {Name:"test", Password:"password"},
+		"test2": {Name:"test2", Password:"password"},
+	}
+	//case 1 correct
+	if !auth("test","password"){
+		t.Error("expected to succsed")
+	}
+	//case 2 wrong
+	if auth("test","wrongpassword"){
+		t.Error("expected to fail wrong password")
+	}
+	//case 3 non existing
+	if auth("nouser","wrongpassword"){
+		t.Error("expected to fail non existing user")
+	}
+
+
+}

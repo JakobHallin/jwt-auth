@@ -67,17 +67,10 @@ func createUser(name, password string) error{
 	users[name]= user
 	return saveUser(user)
 }
-func auth(name, password string) bool{
+func auth(name, password string){
 	//cheack if name exist
-	user, exist := users[name]
-	if !exist {
-		return false
-	}
-	//hash the password //will do latter
+	user, exist:
+	//hash the password
 	// compare it
-	if user.Password != password{
-		return false
-	}
-	return true
 }
 
