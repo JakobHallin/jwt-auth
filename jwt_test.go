@@ -40,7 +40,7 @@ func TestValidate(t *testing.T){
 	}
 	token, err =  ValidateToken(tokenstring)
 	if err != nil {
-		t.Log("ValidateToken returned error:", err)
+		t.Log("expected error for fake token:", err)
 	}
 	if token.Valid {
 		t.Fatal("expected token to be invalid, but it is valid")

@@ -12,6 +12,18 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  testdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: myuser
+      POSTGRES_DB: testdb
+    ports:
+    - "5433:5432" #cant have the same as the db
+    volumes:
+      - pgdatatest:/var/lib/postgresql/data
+
   app:
     build: .
     depends_on:
@@ -28,3 +40,4 @@ services:
 
 volumes:
   pgdata:
+  pgdatatest:

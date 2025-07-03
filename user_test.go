@@ -2,32 +2,44 @@ package main
 import (
 	"testing"
 	"os"
-	"golang.org/x/crypto/bcrypt"
+	"log"
+	//"golang.org/x/crypto/bcrypt"
+	"database/sql"
 )
+func setUpTestStore(t *testing.T) *UserStore{
+	dsn := os.Getenv("TEST_DATABASE_URL")
+	if dsn == "" {
+		log.Fatal("TEST_DATABASE_URL not set")
+	}
+
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		log.Fatal("FAILED to open database", err)
+	}
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Failed to ping DB: %v", err)
+	}
+	store := &UserStore{db: db}
+	if err := store.InitSchema(); err != nil {
+		log.Fatalf("Failed to initialize schema: %v", err)
+	}
+	// Clean users before each test
+	_, err = db.Exec(`DELETE FROM users`)
+	if err != nil {
+		t.Fatalf("Failed to clear users table: %v", err)
+	}
+	return store
+}
 
 func TestCreateUser(t *testing.T){
-	tmpFile, err := os.CreateTemp("", "test_users.csv")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
-	defer os.Remove(tmpFile.Name())
-	storage = tmpFile.Name()
-	users = make(map[string]User)
-	err = createUser("user","word")
+
+	store:=setUpTestStore(t)
+	err := store.CreateUser("testuser", "word")
 	if err != nil {
 		t.Errorf("Failed to create user: %v", err)
 	}
-	record, err := os.ReadFile(storage)
-	if err != nil {
-		t.Fatalf("Failed to read temp file: %v", err)
-	}
-	expected := "user,word\n"
-	if string(record) != expected { //this is no longer true password is now hashed
-		//t.Fatalf("Expected file content %q, got %q", expected, record)
-	}
-
-
 }
+/* this function dont exist no more
 func TestLoadUser(t *testing.T){
 	//Create a temporary CSV file
 	tmpFile, err := os.CreateTemp("", "test_users.csv")
@@ -56,23 +68,23 @@ func TestLoadUser(t *testing.T){
 	if user.Password != "password123" {
         	t.Errorf("Expected password 'password123', got '%s'", user.Password)
 	}
-}
+}*/
 func TestAuth(t *testing.T){
-	hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-	users = map[string]User{
-		"test": {Name:"test", Password: string(hashed)},
-		"test2": {Name:"test2", Password:"password"},
+	store:=setUpTestStore(t)
+	err := store.CreateUser("test", "password")
+	if err != nil {
+		t.Errorf("Failed to create user: %v", err)
 	}
 	//case 1 correct
-	if !auth("test","password"){
+	if !store.Auth("test","password"){
 		t.Error("expected to succsed")
 	}
 	//case 2 wrong
-	if auth("test", "falsepassword"){
+	if store.Auth("test", "falsepassword"){
 		t.Error("expected to fail wrong password")
 	}
 	//case 3 non existing
-	if auth("nouser","wrongpassword"){
+	if store.Auth("nouser","wrongpassword"){
 		t.Error("expected to fail non existing user")
 	}
 
