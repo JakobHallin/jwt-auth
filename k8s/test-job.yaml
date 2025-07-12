@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: run-go-tests
+spec:
+  template:
+    spec:
+      containers:
+        - name: go-test-runner
+          image: jwt-go-test
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TEST_DATABASE_URL
+              value: postgres://myuser:example@postgres-test-service:5432/testdb?sslmode=disable
+      restartPolicy: Never
+  backoffLimit: 0
