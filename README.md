@@ -46,7 +46,6 @@ export TEST_DATABASE_URL="postgres://myuser:example@localhost:5433/testdb?sslmod
 ```
 run the test
 ```
-.
 go test . -v
 ```
 3. Try It Out (Signup, Login, Protected Access)
