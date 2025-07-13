@@ -1,4 +1,4 @@
-# JWT-Go
+# JWT-auth
 
 A backend authenticatio built with Go, PostgreSQL, and JWT. Token-based authentication, test coverage, and containerized deployment using Docker and Kubernetes.
 
