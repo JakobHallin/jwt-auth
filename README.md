@@ -50,6 +50,14 @@ run the test
 .
 go test . -v
 ```
+3. Try It Out (Signup, Login, Protected Access)
+```
+curl -i -X POST   -H "Content-Type: application/json"   -d '{"username":"alice","password":"secret"}'   http://localhost:8080/signup
+
+curl -i -X POST   -H "Content-Type: application/json"   -d '{"username":"alice","password":"secret"}'   http://localhost:8080/login
+
+curl -i -H "Authorization: Bearer <token>"   http://localhost:8080/protected
+```
 ## ☸️ Kubernetes
 Deploy the App
 Need to add the dockerfile
@@ -85,8 +93,6 @@ Method	Path	Description
 POST	/signup	Create a new user
 POST	/login	Get JWT token
 GET	/protected	Requires valid token
-
-Send Authorization: Bearer <token> header for protected access.
 ```
 ## Why This Project?
 This project was built to:
